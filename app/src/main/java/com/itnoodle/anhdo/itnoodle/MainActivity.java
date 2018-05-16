@@ -24,9 +24,18 @@ public class MainActivity extends AppCompatActivity
         ScoreboardFragment.OnListFragmentInteractionListener,
         Profile.OnFragmentInteractionListener {
 
+    private android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+    private AnnounceFragment announceFragment = new AnnounceFragment();
+    private ScoreboardFragment scoreboardFragment = new ScoreboardFragment();
+    private Profile profile = new Profile();
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getResources().getString(R.string.title_announce));
+        fragmentManager.beginTransaction().replace(R.id.fragment, announceFragment).commit();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -87,14 +96,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         if (id == R.id.nav_announce) {
             setTitle(getResources().getString(R.string.title_announce));
-            AnnounceFragment announceFragment = new AnnounceFragment();
             fragmentManager.beginTransaction().replace(R.id.fragment, announceFragment).commit();
         } else if (id == R.id.nav_scoreboard) {
             setTitle(getResources().getString(R.string.title_scoreboard));
-            ScoreboardFragment scoreboardFragment = new ScoreboardFragment();
             fragmentManager.beginTransaction().replace(R.id.fragment, scoreboardFragment).commit();
         }
 //        else if (id == R.id.nav_slideshow) {
@@ -106,7 +112,6 @@ public class MainActivity extends AppCompatActivity
 //        }
         else if (id == R.id.nav_profile) {
             setTitle(getResources().getString(R.string.title_profile));
-            Profile profile = new Profile();
             fragmentManager.beginTransaction().replace(R.id.fragment, profile).commit();
         }
 
