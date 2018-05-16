@@ -24,6 +24,7 @@ import java.util.List;
  */
 public class AnnounceFragment extends Fragment {
 
+    private MyAnnounceRecyclerViewAdapter announceAdapter;
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
@@ -70,7 +71,8 @@ public class AnnounceFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            MyAnnounceRecyclerViewAdapter announceAdapter = new MyAnnounceRecyclerViewAdapter(getContext(), mListener);
+            if(announceAdapter == null)
+                announceAdapter = new MyAnnounceRecyclerViewAdapter(getContext(), mListener);
             recyclerView.setAdapter(announceAdapter);
         }
         return view;
