@@ -1,12 +1,34 @@
 package com.itnoodle.anhdo.itnoodle;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.itnoodle.anhdo.itnoodle.utilities.ApiUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -18,6 +40,7 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class Profile extends Fragment {
+    public final static String LOG_TAG = "PROFILE_FRAG";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +49,15 @@ public class Profile extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private EditText mStdCodeView;
+    private EditText mTermView;
+    private EditText mYearView;
+    private RequestQueue queue;
+    private TextView tvName;
+    private TextView tvBirthday;
+    private TextView tvKlass;
+    private View mProgressView;
+    private View mLoginFormView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -49,6 +81,26 @@ public class Profile extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Button mLoginButton = (Button)getView().findViewById(R.id.btn_login);
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+            }
+        });
+        mStdCodeView = (EditText) getView().findViewById(R.id.std_code);
+        mTermView = (EditText) getView().findViewById(R.id.term);
+        mYearView = (EditText) getView().findViewById(R.id.year);
+        tvBirthday = (TextView) getView().findViewById(R.id.tv_birthday);
+        tvKlass = (TextView) getView().findViewById(R.id.tv_klass);
+        tvName = (TextView) getView().findViewById(R.id.tv_fullname);
+        mLoginFormView = (View)getView().findViewById(R.id.login_form);
+        mProgressView = (View)getView().findViewById(R.id.login_progress);
     }
 
     @Override
@@ -105,4 +157,130 @@ public class Profile extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+    /**
+     * Attempts to sign in or register the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    private void attemptLogin() {
+        // Reset errors.
+        mStdCodeView.setError(null);
+        mTermView.setError(null);
+        mYearView.setError(null);
+
+        // Store values at the time of the login attempt.
+        String studentCode = mStdCodeView.getText().toString();
+        String term = mTermView.getText().toString();
+        String year = mYearView.getText().toString();
+        Log.i(LOG_TAG, studentCode);
+        Log.i(LOG_TAG, term);
+        Log.i(LOG_TAG, year);
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid student code.
+        if (!isStudentCodeValid(studentCode)) {
+            mStdCodeView.setError(getString(R.string.error_invalid_student_code));
+            focusView = mStdCodeView;
+            cancel = true;
+        }
+
+        // Check for a valid term if student code entered one.
+        if (!cancel && !isTermValid(term)) {
+            mTermView.setError(getString(R.string.error_invalid_term));
+            focusView = mTermView;
+            cancel = true;
+        }
+
+        // Check for a valid year if student code entered one and term also entered one.
+        if (!cancel && !isYearValid(year)) {
+            mYearView.setError(getString(R.string.error_invalid_year));
+            focusView = mYearView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress(true);
+            queue = Volley.newRequestQueue(getContext());
+            queue.add(new StringRequest(Request.Method.GET, ApiUtils.getStudentUrl(studentCode, term, year.substring(0,4)),
+                    new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String response) {
+                            showProgress(false);
+                            try {
+                                JSONObject student = new JSONObject(response);
+                                tvName.setText(student.getString("fullname"));
+                                tvKlass.setText(student.getString("klass"));
+                                tvBirthday.setText(student.getString("birthday"));
+                            } catch(final JSONException e) {
+                                Log.e(LOG_TAG, "Parse JSON failed");
+                                Log.e(LOG_TAG, e.getMessage());
+                            }
+
+                            Log.i(LOG_TAG, response);
+                        }
+                    }, new Response.ErrorListener(){
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    showProgress(false);
+                    Log.e(LOG_TAG, "request get student failed");
+                }
+            }));
+        }
+    }
+
+    private boolean isTermValid(String term) {
+        return term.equals("1") || term.equals("2");
+    }
+
+    private boolean isYearValid(String year) {
+        return year.equals("2017-2018") || year.equals("2016-2017") || year.equals("2018-2019");
+    }
+
+    private boolean isStudentCodeValid(String studentCode) {
+        return studentCode.length() == 8;
+    }
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
 }
