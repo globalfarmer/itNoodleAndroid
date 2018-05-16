@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.itnoodle.anhdo.itnoodle.dummy.DummyContent;
 import com.itnoodle.anhdo.itnoodle.dummy.DummyContent.DummyItem;
+import com.itnoodle.anhdo.itnoodle.dummy.ScoreboardContent;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ScoreboardFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    public static MyScoreboardRecyclerViewAdapter scoreboardAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,7 +71,9 @@ public class ScoreboardFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyScoreboardRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            if(scoreboardAdapter == null)
+                scoreboardAdapter = new MyScoreboardRecyclerViewAdapter(getContext(), mListener);
+            recyclerView.setAdapter(scoreboardAdapter);
         }
         return view;
     }
@@ -104,6 +108,6 @@ public class ScoreboardFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(ScoreboardContent.ScoreboardItem item);
     }
 }

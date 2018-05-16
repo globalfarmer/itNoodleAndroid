@@ -1,5 +1,6 @@
 package com.itnoodle.anhdo.itnoodle;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,22 +8,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.itnoodle.anhdo.itnoodle.ScoreboardFragment.OnListFragmentInteractionListener;
-import com.itnoodle.anhdo.itnoodle.dummy.DummyContent.DummyItem;
+import com.itnoodle.anhdo.itnoodle.dummy.ScoreboardContent;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link com.itnoodle.anhdo.itnoodle.dummy.ScoreboardContent.ScoreboardItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyScoreboardRecyclerViewAdapter extends RecyclerView.Adapter<MyScoreboardRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<ScoreboardContent.ScoreboardItem> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyScoreboardRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
+    public MyScoreboardRecyclerViewAdapter(Context context, OnListFragmentInteractionListener listener) {
+        mValues = ScoreboardContent.ITEMS;
+        ScoreboardContent.loadNextPage(this, context);
         mListener = listener;
     }
 
@@ -37,7 +39,9 @@ public class MyScoreboardRecyclerViewAdapter extends RecyclerView.Adapter<MyScor
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mCodeView.setText(mValues.get(position).code);
+        holder.mNameView.setText(mValues.get(position).name);
+        holder.mUploadtime.setText(mValues.get(position).uploadTime);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,19 +63,23 @@ public class MyScoreboardRecyclerViewAdapter extends RecyclerView.Adapter<MyScor
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public final TextView mCodeView;
+        public final TextView mNameView;
+        public final TextView mUploadtime;
+        public ScoreboardContent.ScoreboardItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mCodeView = (TextView) view.findViewById(R.id.code);
+            mNameView = (TextView) view.findViewById(R.id.name);
+            mUploadtime = (TextView) view.findViewById(R.id.status);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mNameView.getText() + "'";
         }
     }
 }

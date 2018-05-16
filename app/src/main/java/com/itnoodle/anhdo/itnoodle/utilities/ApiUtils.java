@@ -72,10 +72,12 @@ public class ApiUtils {
      * @param page The student code that will be queried for.
      * @return The URL to use to query the weather server.
      */
-    public static String getScoreboardUrl(String page) {
+    public static String getScoreboardUrl(String page, String term, String year) {
         Uri builtUri = Uri.parse(SERVICE_BASE_URL).buildUpon()
                 .appendPath(SCOREBOARD_BASE)
                 .appendQueryParameter(PARAM_PAGE, page)
+                .appendQueryParameter(PARAM_TERM, term)
+                .appendQueryParameter(PARAM_YEAR, year)
                 .appendQueryParameter(PARAM_EDU, "0")
                 .build();
 

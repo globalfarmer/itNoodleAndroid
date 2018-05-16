@@ -2,11 +2,13 @@ package com.itnoodle.anhdo.itnoodle;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,9 +18,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.itnoodle.anhdo.itnoodle.dummy.AnnounceContent;
 import com.itnoodle.anhdo.itnoodle.dummy.DummyContent;
+import com.itnoodle.anhdo.itnoodle.dummy.ScoreboardContent;
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -124,10 +128,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
-    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -140,5 +140,24 @@ public class MainActivity extends AppCompatActivity
         if(intent.resolveActivity(getPackageManager()) != null)
             startActivity(intent);
 //        Log.i(LOG_TAG, item.title);
+    }
+
+    @Override
+    public void onListFragmentInteraction(ScoreboardContent.ScoreboardItem item) {
+        if(!item.uploadTime.equals(ScoreboardContent.ScoreboardItem.SCOREBOARD_NOT_UPLOADED)) {
+            Log.i(LOG_TAG, item.uploadTime);
+            Log.i(LOG_TAG, item.url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+item.url));
+            if(intent.resolveActivity(getPackageManager()) != null)
+                startActivity(intent);
+        }
+        else
+        {
+            Toast toast = Toast.makeText(MainActivity.this, item.name+" ("+item.code +") " + item.uploadTime, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.getView().setBackgroundColor(Color.YELLOW);
+            toast.show();
+        }
+        Log.i(LOG_TAG, item.code);
     }
 }
