@@ -2,8 +2,8 @@
     <string name="app_name">itNoodle</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Tran Trinh Binh Thanh</string>
-    <string name="nav_header_subtitle">13020532@vnu.edu.vn</string>
+    <string name="nav_header_title">Tên Sinh Viên</string>
+    <string name="nav_header_subtitle">ma_sinh_vien@vnu.edu.vn</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="title_announce">Tin Tức</string>
     <string name="title_scoreboard">Bảng điểm</string>

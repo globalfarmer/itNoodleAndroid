@@ -109,7 +109,7 @@ public class ScoreboardContent {
             this.code= courseCode;
             this.name = courseName;
             this.url = url;
-            
+
             if(!TextUtils.isEmpty(uploadTime.trim()))
                 this.uploadTime = uploadTime;
             else

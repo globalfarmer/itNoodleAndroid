@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,8 @@ public class Profile extends Fragment {
     private TextView tvKlass;
     private View mProgressView;
     private View mLoginFormView;
+    private TextView mNavHeaderTitle;
+    private TextView mNavHeaderSubtitle;
 
     private OnFragmentInteractionListener mListener;
 
@@ -101,6 +104,8 @@ public class Profile extends Fragment {
         tvName = (TextView) getView().findViewById(R.id.tv_fullname);
         mLoginFormView = (View)getView().findViewById(R.id.login_form);
         mProgressView = (View)getView().findViewById(R.id.login_progress);
+        mNavHeaderTitle = (TextView)getActivity().findViewById(R.id.nav_header_title);
+        mNavHeaderSubtitle = (TextView)getActivity().findViewById(R.id.nav_header_subtitle);
     }
 
     @Override
@@ -110,6 +115,13 @@ public class Profile extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(Student.hasInfo)
+            setStudentInfo();
     }
 
     @Override
@@ -169,7 +181,7 @@ public class Profile extends Fragment {
         mYearView.setError(null);
 
         // Store values at the time of the login attempt.
-        String studentCode = mStdCodeView.getText().toString();
+        final String studentCode = mStdCodeView.getText().toString();
         String term = mTermView.getText().toString();
         String year = mYearView.getText().toString();
         Log.i(LOG_TAG, studentCode);
@@ -216,9 +228,12 @@ public class Profile extends Fragment {
                             showProgress(false);
                             try {
                                 JSONObject student = new JSONObject(response);
-                                tvName.setText(student.getString("fullname"));
-                                tvKlass.setText(student.getString("klass"));
-                                tvBirthday.setText(student.getString("birthday"));
+                                Student.setCode(student.optString(Student.KEY_CODE));
+                                Student.fullname = student.optString(Student.KEY_FULLNAME);
+                                Student.birthday = student.optString(Student.KEY_BIRTHDAY);
+                                Student.klass = student.optString(Student.KEY_KLASS);
+                                Student.hasInfo = true;
+                                setStudentInfo();
                             } catch(final JSONException e) {
                                 Log.e(LOG_TAG, "Parse JSON failed");
                                 Log.e(LOG_TAG, e.getMessage());
@@ -235,7 +250,13 @@ public class Profile extends Fragment {
             }));
         }
     }
-
+    private void setStudentInfo() {
+        tvName.setText(Student.fullname);
+        tvKlass.setText(Student.klass);
+        tvBirthday.setText(Student.birthday);
+        mNavHeaderTitle.setText(Student.fullname);
+        mNavHeaderSubtitle.setText(Student.getEmail());
+    }
     private boolean isTermValid(String term) {
         return term.equals("1") || term.equals("2");
     }
@@ -282,5 +303,23 @@ public class Profile extends Fragment {
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
+    static class Student {
+        public static final String KEY_CODE = "code";
+        public static final String KEY_FULLNAME = "fullname";
+        public static final String KEY_KLASS = "klass";
+        public static final String KEY_BIRTHDAY = "birthday";
+        public static String code;
+        public static String fullname;
+        public static String klass;
+        public static String birthday;
+        public static String email;
+        public static boolean hasInfo = false;
+        public static void setCode(String code) {
+            Student.code = code;
+            Student.email = code + "@vnu.edu.vn";
+        }
+        public static String getEmail() {
+            return email;
+        }
+    }
 }
