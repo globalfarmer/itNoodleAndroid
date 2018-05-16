@@ -45,39 +45,26 @@ public class ApiUtils {
      * @param page The student code that will be queried for.
      * @return The URL to use to query the weather server.
      */
-    public static URL getAnnounceUrl(String page) {
+    public static String getAnnounceUrl(String page) {
         Uri builtUri = Uri.parse(SERVICE_BASE_URL).buildUpon()
                 .appendPath(ANNOUNCE_BASE)
                 .appendQueryParameter(PARAM_PAGE, page)
                 .build();
 
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return url;
+        return builtUri.toString();
     }
     /**
      * Builds the URL used to query Github.
      * @param isStar
      * @return The URL to use to query the weather server.
      */
-    public static URL getAnnounceStarUrl(boolean isStar) {
+    public static String getAnnounceStarUrl(boolean isStar) {
         String starPath = isStar ? "star" : "unstar";
         Uri builtUri =  Uri.parse(SERVICE_BASE_URL).buildUpon()
                 .appendPath(ANNOUNCE_BASE)
                 .appendPath("star")
                 .build();
-
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return url;
+        return builtUri.toString();
     }
     /**
      * Builds the URL used to query Github.
@@ -85,39 +72,27 @@ public class ApiUtils {
      * @param page The student code that will be queried for.
      * @return The URL to use to query the weather server.
      */
-    public static URL getScoreboardUrl(String page) {
+    public static String getScoreboardUrl(String page) {
         Uri builtUri = Uri.parse(SERVICE_BASE_URL).buildUpon()
                 .appendPath(SCOREBOARD_BASE)
                 .appendQueryParameter(PARAM_PAGE, page)
                 .appendQueryParameter(PARAM_EDU, "0")
                 .build();
 
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return url;
+       return builtUri.toString();
     }
     /**
      * Builds the URL used to query Github.
      * @param isStar
      * @return The URL to use to query the weather server.
      */
-    public static URL getScoreboardStarUrl(boolean isStar) {
+    public static String getScoreboardStarUrl(boolean isStar) {
         String starPath = isStar ? "star" : "unstar";
         Uri builtUri = Uri.parse(SERVICE_BASE_URL).buildUpon()
                 .appendPath(SCOREBOARD_BASE)
                 .appendPath(starPath)
                 .build();
 
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return url;
+        return builtUri.toString();
     }
 }

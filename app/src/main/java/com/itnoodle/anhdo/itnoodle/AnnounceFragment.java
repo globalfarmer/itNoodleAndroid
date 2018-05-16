@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.itnoodle.anhdo.itnoodle.dummy.AnnounceContent;
 import com.itnoodle.anhdo.itnoodle.dummy.DummyContent;
 import com.itnoodle.anhdo.itnoodle.dummy.DummyContent.DummyItem;
 
@@ -69,7 +70,8 @@ public class AnnounceFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyAnnounceRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            MyAnnounceRecyclerViewAdapter announceAdapter = new MyAnnounceRecyclerViewAdapter(getContext(), mListener);
+            recyclerView.setAdapter(announceAdapter);
         }
         return view;
     }
@@ -104,6 +106,6 @@ public class AnnounceFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(AnnounceContent.AnnounceItem item);
     }
 }
