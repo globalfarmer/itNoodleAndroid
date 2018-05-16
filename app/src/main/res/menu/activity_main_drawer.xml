@@ -6,11 +6,11 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_announce"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_announce"
             android:title="Tin tức" />
         <item
             android:id="@+id/nav_scoreboard"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_menu_scoreboard"
             android:title="Bảng điểm" />
         <!--<item-->
             <!--android:id="@+id/nav_slideshow"-->
@@ -26,7 +26,7 @@
         <menu>
             <item
                 android:id="@+id/nav_profile"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_profile"
                 android:title="Cá nhân" />
             <!--<item-->
                 <!--android:id="@+id/nav_send"-->
