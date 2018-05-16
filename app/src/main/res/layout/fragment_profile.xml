@@ -140,9 +140,8 @@
                 android:id="@+id/tv_birthday"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:ems="10"
-                android:textSize="20sp"
-                android:inputType="date" />
+                android:padding="5dp"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/btn_login"
