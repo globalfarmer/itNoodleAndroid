@@ -3,6 +3,7 @@ package com.itnoodle.anhdo.itnoodle;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +30,18 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.itnoodle.anhdo.itnoodle.utilities.ApiUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +69,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    public final static String LOG_TAG = "LOGIN_ACTIVITY";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
+    private EditText mTermView;
+    private EditText mYearView;
     private View mProgressView;
     private View mLoginFormView;
+    private RequestQueue queue;
+    private TextView tvName;
+    private TextView tvBirthday;
+    private TextView tvKlass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +92,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mTermView = (EditText) findViewById(R.id.term);
         mYearView = (EditText) findViewById(R.id.year);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        tvName = (TextView)findViewById(R.id.tv_fullname);
+        tvKlass = (TextView)findViewById(R.id.tv_klass);
+        tvBirthday = (TextView)findViewById(R.id.tv_birthday);
+        mTermView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -83,8 +106,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mLoginButton = (Button) findViewById(R.id.btn_login);
+        mLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -151,30 +174,38 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Reset errors.
         mEmailView.setError(null);
-        mPasswordView.setError(null);
+        mTermView.setError(null);
+        mYearView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String studentCode = mEmailView.getText().toString();
+        String term = mTermView.getText().toString();
+        String year = mYearView.getText().toString();
+        Log.i(LOG_TAG, studentCode);
+        Log.i(LOG_TAG, term);
+        Log.i(LOG_TAG, year);
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+        // Check for a valid student code.
+        if (!isStudentCodeValid(studentCode)) {
+            mEmailView.setError(getString(R.string.error_invalid_student_code));
+            focusView = mEmailView;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        // Check for a valid term if student code entered one.
+        if (!cancel && !isTermValid(term)) {
+            mTermView.setError(getString(R.string.error_invalid_term));
+            focusView = mTermView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        }
+
+        // Check for a valid year if student code entered one and term also entered one.
+        if (!cancel && !isYearValid(year)) {
+            mYearView.setError(getString(R.string.error_invalid_year));
+            focusView = mYearView;
             cancel = true;
         }
 
@@ -186,19 +217,49 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            queue = Volley.newRequestQueue(this);
+            queue.add(new StringRequest(Request.Method.GET, ApiUtils.getStudentUrl(studentCode, term, year.substring(0,4)),
+                    new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String response) {
+                            showProgress(false);
+                            try {
+                                JSONObject student = new JSONObject(response);
+                                tvName.setText(student.getString("fullname"));
+                                tvKlass.setText(student.getString("klass"));
+                                tvBirthday.setText(student.getString("birthday"));
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            } catch(final JSONException e) {
+                                Log.e(LOG_TAG, "Parse JSON failed");
+                                Log.e(LOG_TAG, e.getMessage());
+                            }
+
+                            Log.i(LOG_TAG, response);
+                        }
+                    }, new Response.ErrorListener(){
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            showProgress(false);
+                            Log.e(LOG_TAG, "request get student failed");
+                        }
+            }));
         }
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isStudentCodeValid(String studentCode) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return studentCode.length() == 8;
     }
 
-    private boolean isPasswordValid(String password) {
+    private boolean isTermValid(String term) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return term.equals("1") || term.equals("2");
+    }
+
+    private boolean isYearValid(String year) {
+        //TODO: Replace this with your own logic
+        return year.equals("2016-2017") || year.equals("2017-2018");
     }
 
     /**
@@ -297,31 +358,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+        private final String mStdCode;
+        private final String mTerm;
+        private final String mYear;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        UserLoginTask(String studentCode, String term, String year) {
+            mStdCode = studentCode;
+            mTerm = term;
+            mYear = year.substring(0, 5);
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+//                if (pieces[0].equals(mEmail)) {
+//                    // Account exists, return true if the password matches.
+//                    return pieces[1].equals(mPassword);
+//                }
             }
 
             // TODO: register the new account here.
@@ -334,10 +390,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
+                try {
+                    // Simulate network access.
+                    Thread.sleep(2100);
+                } catch (InterruptedException e) {
+                    return;
+                }
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mEmailView.setError(getString(R.string.error_invalid_student_code));
             }
         }
 

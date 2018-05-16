@@ -3,23 +3,16 @@
 
     <!-- Strings related to login -->
     <string name="prompt_code">Mã sinh viên</string>
-    <string name="prompt_term">Học kỳ</string>
-    <string name="prompt_year">Năm học</string>
+    <string name="prompt_term">Học kỳ (vd: 1)</string>
+    <string name="prompt_year">Năm học (vd: 2017-2018)</string>
     <string name="label_fullname">Họ tên</string>
-    <string name="hint_fullname">Tên đầy đủ</string>
     <string name="label_klass">Lớp</string>
-    <string name="hint_klass">Mã lớp học</string>
     <string name="label_birthday">Ngày sinh</string>
-    <string name="hint_birthday">dd/mm/yyyy</string>
-    <string name="prompt_email">Email</string>
     <string name="btn_login">Tiếp tục</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_student_code">Mã sinh viên không hợp lệ</string>
+    <string name="error_invalid_term">Học kỳ phải là 1 hoặc 2</string>
+    <string name="error_invalid_year">Năm học không hợp lệ</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
