@@ -1,10 +1,12 @@
 package com.itnoodle.anhdo.itnoodle;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity
     private ScoreboardFragment scoreboardFragment = new ScoreboardFragment();
     private Profile profile = new Profile();
 
+    private static final String LOG_TAG = "MAIN_ACTIVITY";
 
 
     @Override
@@ -133,6 +136,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(AnnounceContent.AnnounceItem item) {
-
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.url));
+        if(intent.resolveActivity(getPackageManager()) != null)
+            startActivity(intent);
+//        Log.i(LOG_TAG, item.title);
     }
 }

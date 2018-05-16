@@ -81,7 +81,7 @@ public class AnnounceContent {
                 }, new Response.ErrorListener(){
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(LOG_TAG, "request get student failed");
+                        Log.e(LOG_TAG, "request get announces failed");
                     }
                 }
         ));
