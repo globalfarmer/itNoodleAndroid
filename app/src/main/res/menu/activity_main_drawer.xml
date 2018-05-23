@@ -29,7 +29,7 @@
                 android:icon="@drawable/ic_menu_profile"
                 android:title="Cá nhân" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_mycourse"
                 android:icon="@drawable/ic_my_course_black_24dp"
                 android:title="Môn học của tôi" />
     </group>

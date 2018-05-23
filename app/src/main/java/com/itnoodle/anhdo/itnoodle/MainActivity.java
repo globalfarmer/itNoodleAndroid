@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itnoodle.anhdo.itnoodle.dummy.AnnounceContent;
+import com.itnoodle.anhdo.itnoodle.dummy.CourseContent;
 import com.itnoodle.anhdo.itnoodle.dummy.ScoreboardContent;
 
 public class MainActivity extends AppCompatActivity
@@ -29,12 +30,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView.OnNavigationItemSelectedListener,
         AnnounceFragment.OnListFragmentInteractionListener,
         ScoreboardFragment.OnListFragmentInteractionListener,
-        Profile.OnFragmentInteractionListener {
+        Profile.OnFragmentInteractionListener,
+        CourseFragment.OnListFragmentInteractionListener
+         {
 
     private android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
     private AnnounceFragment announceFragment = new AnnounceFragment();
     private ScoreboardFragment scoreboardFragment = new ScoreboardFragment();
     private Profile profile = new Profile();
+    private CourseFragment myCourse = new CourseFragment();
     private TextView navHeaderTitle;
     private TextView navHeaderSubtitle;
 
@@ -123,6 +127,10 @@ public class MainActivity extends AppCompatActivity
             setTitle(getResources().getString(R.string.title_profile));
             fragmentManager.beginTransaction().replace(R.id.fragment, profile).commit();
         }
+        else if (id == R.id.nav_mycourse) {
+            setTitle(getResources().getString(R.string.title_mycourse));
+            fragmentManager.beginTransaction().replace(R.id.fragment, myCourse).commit();
+        }
 
         DrawerLayout drawer = this.getDelegate().findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -161,6 +169,10 @@ public class MainActivity extends AppCompatActivity
         }
         Log.i(LOG_TAG, item.code);
     }
+    @Override
+    public void onListFragmentInteraction(CourseContent.CourseItem item) {
+
+    }
     private boolean getNavHeader() {
         if(navHeaderTitle==null) {
             navHeaderTitle = this.getDelegate().findViewById(R.id.nav_header_title);
@@ -179,4 +191,5 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-}
+
+ }

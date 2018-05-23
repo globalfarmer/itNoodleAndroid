@@ -26,10 +26,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.itnoodle.anhdo.itnoodle.dummy.CourseContent;
 import com.itnoodle.anhdo.itnoodle.utilities.ApiUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -230,6 +237,23 @@ public class Profile extends Fragment {
                                 Student.klass = student.optString(Student.KEY_KLASS);
                                 Student.hasInfo = true;
                                 setStudentInfo();
+                                JSONObject slots = student.optJSONObject(Student.KEY_SLOTS);
+                                Log.i(LOG_TAG, slots.toString());
+                                Student.ITEM_MAP.clear();
+                                Student.ITEM_MAP.clear();
+                                JSONObject course;
+                                for(Iterator<String> iKey=slots.keys();iKey.hasNext();) {
+                                    course = slots.optJSONObject(iKey.next().toString());
+                                    Student.addCourse(
+                                            new CourseContent.CourseItem(
+                                                    course.optString(CourseContent.CourseItem.CODE),
+                                                    course.optString(CourseContent.CourseItem.NAME),
+                                                    course.optString(CourseContent.CourseItem.CREDIT),
+                                                    course.optString(CourseContent.CourseItem.GROUP),
+                                                    course.optString(CourseContent.CourseItem.NOTE)
+                                            )
+                                    );
+                                }
                             } catch(final JSONException e) {
                                 Log.e(LOG_TAG, "Parse JSON failed");
                                 Log.e(LOG_TAG, e.getMessage());
@@ -299,16 +323,23 @@ public class Profile extends Fragment {
         }
     }
     static class Student {
+        public static final List<CourseContent.CourseItem> ITEMS = new ArrayList<CourseContent.CourseItem>();
+        public static final Map<String, CourseContent.CourseItem> ITEM_MAP = new HashMap<String, CourseContent.CourseItem>();
         public static final String KEY_CODE = "code";
         public static final String KEY_FULLNAME = "fullname";
         public static final String KEY_KLASS = "klass";
         public static final String KEY_BIRTHDAY = "birthday";
+        public static final String KEY_SLOTS = "slots";
         public static String code;
         public static String fullname;
         public static String klass;
         public static String birthday;
         public static String email;
         public static boolean hasInfo = false;
+        static public void addCourse(CourseContent.CourseItem courseItem) {
+            ITEMS.add(courseItem);
+            ITEM_MAP.put(courseItem.code, courseItem);
+        }
         public static void setCode(String code) {
             Student.code = code;
             Student.email = code + "@vnu.edu.vn";
