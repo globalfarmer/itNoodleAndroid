@@ -239,7 +239,7 @@ public class Profile extends Fragment {
                                 setStudentInfo();
                                 JSONObject slots = student.optJSONObject(Student.KEY_SLOTS);
                                 Log.i(LOG_TAG, slots.toString());
-                                Student.ITEM_MAP.clear();
+                                Student.ITEMS.clear();
                                 Student.ITEM_MAP.clear();
                                 JSONObject course;
                                 for(Iterator<String> iKey=slots.keys();iKey.hasNext();) {
