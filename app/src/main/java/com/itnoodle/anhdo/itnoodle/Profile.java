@@ -59,8 +59,6 @@ public class Profile extends Fragment {
     private TextView tvKlass;
     private View mProgressView;
     private View mLoginFormView;
-    private TextView mNavHeaderTitle;
-    private TextView mNavHeaderSubtitle;
 
     private OnFragmentInteractionListener mListener;
 
@@ -104,8 +102,6 @@ public class Profile extends Fragment {
         tvName = (TextView) getView().findViewById(R.id.tv_fullname);
         mLoginFormView = (View)getView().findViewById(R.id.login_form);
         mProgressView = (View)getView().findViewById(R.id.login_progress);
-        mNavHeaderTitle = (TextView)getActivity().findViewById(R.id.nav_header_title);
-        mNavHeaderSubtitle = (TextView)getActivity().findViewById(R.id.nav_header_subtitle);
     }
 
     @Override
@@ -254,8 +250,7 @@ public class Profile extends Fragment {
         tvName.setText(Student.fullname);
         tvKlass.setText(Student.klass);
         tvBirthday.setText(Student.birthday);
-        mNavHeaderTitle.setText(Student.fullname);
-        mNavHeaderSubtitle.setText(Student.getEmail());
+        ((MainActivity)getActivity()).updateStudentInfo();
     }
     private boolean isTermValid(String term) {
         return term.equals("1") || term.equals("2");

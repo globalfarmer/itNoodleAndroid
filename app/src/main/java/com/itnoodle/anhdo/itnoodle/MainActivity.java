@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itnoodle.anhdo.itnoodle.dummy.AnnounceContent;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity
     private AnnounceFragment announceFragment = new AnnounceFragment();
     private ScoreboardFragment scoreboardFragment = new ScoreboardFragment();
     private Profile profile = new Profile();
+    private TextView navHeaderTitle;
+    private TextView navHeaderSubtitle;
 
     private static final String LOG_TAG = "MAIN_ACTIVITY";
 
@@ -44,7 +47,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = this.getDelegate().findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -158,5 +160,23 @@ public class MainActivity extends AppCompatActivity
             toast.show();
         }
         Log.i(LOG_TAG, item.code);
+    }
+    private boolean getNavHeader() {
+        if(navHeaderTitle==null) {
+            navHeaderTitle = this.getDelegate().findViewById(R.id.nav_header_title);
+            navHeaderSubtitle = this.getDelegate().findViewById(R.id.nav_header_subtitle);
+        }
+        return navHeaderTitle != null ? true : false;
+    }
+    public void updateStudentInfo() {
+        if(getNavHeader()) {
+            if (Profile.Student.code == null) {
+                navHeaderTitle.setText(getString(R.string.nav_header_title));
+                navHeaderSubtitle.setText(getString(R.string.nav_header_subtitle));
+            } else {
+                navHeaderTitle.setText(Profile.Student.fullname);
+                navHeaderSubtitle.setText(Profile.Student.getEmail());
+            }
+        }
     }
 }

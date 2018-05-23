@@ -55,14 +55,14 @@ public class AnnounceContent {
                         Log.i(LOG_TAG, response);
                         try {
                             JSONObject res = new JSONObject(response);
-                            int page = Integer.parseInt(res.getString("page"));
+                            int itemSize = ITEMS.size();
                             JSONArray announces = res.getJSONArray("content");
                             JSONObject announce;
                             for(int i = 0; i < announces.length(); i++) {
                                 announce = announces.getJSONObject(i);
                                 Log.i(LOG_TAG, announce.getString(AnnounceItem.URL));
                                 addItem(new AnnounceItem(
-                                    Integer.toString(i+1),
+                                    Integer.toString(itemSize+i+1),
                                     announce.getString(AnnounceItem.THUMBNAIL_IMG),
                                     announce.getString(AnnounceItem.TITLE),
                                     announce.getString(AnnounceItem.URL),
