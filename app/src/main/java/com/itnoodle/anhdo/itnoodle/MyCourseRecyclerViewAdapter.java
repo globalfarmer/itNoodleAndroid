@@ -1,6 +1,7 @@
 package com.itnoodle.anhdo.itnoodle;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,16 +42,22 @@ public class MyCourseRecyclerViewAdapter extends RecyclerView.Adapter<MyCourseRe
         holder.mItem = mValues.get(position);
         holder.mCode.setText(mValues.get(position).code);
         holder.mName.setText(mValues.get(position).name);
-        if(mValues.get(position).time != null) {
+        Log.i(LOG_TAG, mValues.get(position).toString());
+        if(!TextUtils.isEmpty(mValues.get(position).day) && mValues.get(position).day != null) {
             Log.i(LOG_TAG, "TIME IS NOT NULL");
             holder.mCourseNoFinaltest.setVisibility(View.GONE);
             holder.mCourseHaveFinaltest.setVisibility(LinearLayout.VISIBLE);
-            holder.mFinaltestTime.setText(mValues.get(position).time + " " + mValues.get(position).day);
-            holder.mFinaltestRoom.setText(mValues.get(position).room + " " + mValues.get(position).building);
+            holder.mFinaltestTime.setText(mValues.get(position).day);
+            holder.mFinaltestRoom.setText(mValues.get(position).room);
             holder.mFinaltestType.setText(mValues.get(position).type);
         }
         else {
             Log.i(LOG_TAG, "TIME IS NULL");
+        }
+        if(mValues.get(position).url != null) {
+            Log.i(LOG_TAG, "URL is NOT NULL");
+            holder.mCourseNoScoreboard.setVisibility(View.GONE);
+            holder.mCourseHaveScoreboard.setVisibility(View.VISIBLE);
         }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

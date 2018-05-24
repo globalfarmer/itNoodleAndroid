@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="10dp" >
+    android:layout_margin="5dp"
+    android:padding="10dp"
+    android:background="#dadadc">
 
     <TextView
         android:id="@+id/course_code"
@@ -34,11 +36,11 @@
             android:textAlignment="center"
             android:text="Lịch thi"/>
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:text="@string/course_finaltest_time_label"/>
@@ -47,14 +49,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:textAlignment="viewEnd"/>
+                android:textAlignment="viewEnd" />
         </LinearLayout>
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:text="@string/course_finaltest_room_label"/>
@@ -63,14 +65,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:textAlignment="viewEnd"/>
+                android:textAlignment="viewEnd" />
         </LinearLayout>
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:text="@string/course_finaltest_type_label"/>
@@ -92,7 +94,8 @@
         android:id="@+id/course_have_scoreboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItem"
         android:text="@string/course_have_scoreboard_label"
+        android:textAlignment="center"
+        android:textColor="#3bb104"
         android:visibility="gone"/>
 </LinearLayout>

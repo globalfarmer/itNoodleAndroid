@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -171,8 +172,20 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public void onListFragmentInteraction(CourseContent.CourseItem item) {
-        Log.i(LOG_TAG, item.toString());
-        Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_LONG).show();
+        if(!TextUtils.isEmpty(item.url) && item.url != null) {
+            Log.i(LOG_TAG, item.url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+item.url));
+            if(intent.resolveActivity(getPackageManager()) != null)
+                startActivity(intent);
+        }
+        else
+        {
+            Toast toast = Toast.makeText(MainActivity.this, item.name+" ("+item.code +") " + ScoreboardContent.ScoreboardItem.SCOREBOARD_NOT_UPLOADED, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.getView().setBackgroundColor(Color.YELLOW);
+            toast.show();
+        }
+        Log.i(LOG_TAG, item.code);
     }
     private boolean getNavHeader() {
         if(navHeaderTitle==null) {
