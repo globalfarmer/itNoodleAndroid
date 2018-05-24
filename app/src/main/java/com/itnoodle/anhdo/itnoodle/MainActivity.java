@@ -171,7 +171,8 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public void onListFragmentInteraction(CourseContent.CourseItem item) {
-
+        Log.i(LOG_TAG, item.toString());
+        Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_LONG).show();
     }
     private boolean getNavHeader() {
         if(navHeaderTitle==null) {

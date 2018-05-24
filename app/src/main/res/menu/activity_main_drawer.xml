@@ -11,7 +11,7 @@
             android:title="Tin tức" />
         <item
             android:id="@+id/nav_scoreboard"
-            android:icon="@drawable/ic_menu_scoreboard"
+            android:icon="@drawable/ic_my_course_black_24dp"
             android:title="Bảng điểm" />
         <!--<item-->
             <!--android:id="@+id/nav_slideshow"-->
@@ -30,7 +30,7 @@
                 android:title="Cá nhân" />
             <item
                 android:id="@+id/nav_mycourse"
-                android:icon="@drawable/ic_my_course_black_24dp"
+                android:icon="@drawable/ic_menu_scoreboard"
                 android:title="Môn học của tôi" />
     </group>
 </menu>

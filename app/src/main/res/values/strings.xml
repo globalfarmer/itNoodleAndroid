@@ -24,6 +24,12 @@
     <string name="course_label_credit">Tín chỉ</string>
     <string name="course_label_group">Nhóm</string>
     <string name="course_label_note">Ghi chú</string>
+    <string name="course_no_finaltest_label">Chưa có lịch thi</string>
+    <string name="course_no_scoreboard_label">Chưa có điêm thi</string>
+    <string name="course_have_scoreboard_label">Đã có điểm thi</string>
+    <string name="course_finaltest_time_label">Thời gian thi: </string>
+    <string name="course_finaltest_room_label">Địa điểm thi: </string>
+    <string name="course_finaltest_type_label">Hình thức: </string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

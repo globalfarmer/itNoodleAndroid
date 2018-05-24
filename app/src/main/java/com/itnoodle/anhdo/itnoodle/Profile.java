@@ -238,12 +238,15 @@ public class Profile extends Fragment {
                                 Student.hasInfo = true;
                                 setStudentInfo();
                                 JSONObject slots = student.optJSONObject(Student.KEY_SLOTS);
+                                JSONObject finaltests = student.optJSONObject(Student.KEY_FINALTESTS);
                                 Log.i(LOG_TAG, slots.toString());
                                 Student.ITEMS.clear();
                                 Student.ITEM_MAP.clear();
-                                JSONObject course;
+                                JSONObject course, finaltest;
+                                String courseCode;
                                 for(Iterator<String> iKey=slots.keys();iKey.hasNext();) {
-                                    course = slots.optJSONObject(iKey.next().toString());
+                                    courseCode = iKey.next().toString();
+                                    course = slots.optJSONObject(courseCode);
                                     Student.addCourse(
                                             new CourseContent.CourseItem(
                                                     course.optString(CourseContent.CourseItem.CODE),
@@ -253,6 +256,23 @@ public class Profile extends Fragment {
                                                     course.optString(CourseContent.CourseItem.NOTE)
                                             )
                                     );
+                                    if(finaltests != null) {
+                                        finaltest = finaltests.optJSONObject(courseCode);
+                                        if(finaltest != null) {
+//                                            Log.i(LOG_TAG, courseCode);
+//                                            Log.i(LOG_TAG, finaltest.toString());
+                                            Student.updateFinaltest(
+                                                    courseCode,
+                                                    finaltest.optString(CourseContent.CourseItem.SEAT_NO),
+                                                    finaltest.optString(CourseContent.CourseItem.DAY),
+                                                    finaltest.optString(CourseContent.CourseItem.TIME),
+                                                    finaltest.optString(CourseContent.CourseItem.SHIFT),
+                                                    finaltest.optString(CourseContent.CourseItem.ROOM),
+                                                    finaltest.optString(CourseContent.CourseItem.BUILDING),
+                                                    finaltest.optString(CourseContent.CourseItem.TYPE)
+                                                    );
+                                        }
+                                    }
                                 }
                             } catch(final JSONException e) {
                                 Log.e(LOG_TAG, "Parse JSON failed");
@@ -330,6 +350,7 @@ public class Profile extends Fragment {
         public static final String KEY_KLASS = "klass";
         public static final String KEY_BIRTHDAY = "birthday";
         public static final String KEY_SLOTS = "slots";
+        public static final String KEY_FINALTESTS = "finaltests";
         public static String code;
         public static String fullname;
         public static String klass;
@@ -339,6 +360,16 @@ public class Profile extends Fragment {
         static public void addCourse(CourseContent.CourseItem courseItem) {
             ITEMS.add(courseItem);
             ITEM_MAP.put(courseItem.code, courseItem);
+        }
+        static public void updateFinaltest(String courseCode, String seatNo, String day, String time, String shift, String room, String building, String type) {
+            CourseContent.CourseItem course = ITEM_MAP.get(courseCode);
+            if(course != null)
+                course.updateFinaltest(seatNo, day, time, shift, room, building, type);
+        }
+        static void updateScoreboard(String courseCode, String url, String uploadtime) {
+            CourseContent.CourseItem course = ITEM_MAP.get(courseCode);
+            if(course != null)
+                course.updateScoreboard(url, uploadtime);
         }
         public static void setCode(String code) {
             Student.code = code;

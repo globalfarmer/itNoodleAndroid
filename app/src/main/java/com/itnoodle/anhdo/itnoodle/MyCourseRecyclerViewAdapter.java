@@ -1,9 +1,11 @@
 package com.itnoodle.anhdo.itnoodle;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.itnoodle.anhdo.itnoodle.CourseFragment.OnListFragmentInteractionListener;
@@ -17,6 +19,7 @@ import java.util.List;
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyCourseRecyclerViewAdapter extends RecyclerView.Adapter<MyCourseRecyclerViewAdapter.ViewHolder> {
+    private static final String LOG_TAG = "MY_COURSE_RECYCLE_VIEW_ADAPTER";
 
     private final List<CourseContent.CourseItem> mValues;
     private final OnListFragmentInteractionListener mListener;
@@ -38,9 +41,17 @@ public class MyCourseRecyclerViewAdapter extends RecyclerView.Adapter<MyCourseRe
         holder.mItem = mValues.get(position);
         holder.mCode.setText(mValues.get(position).code);
         holder.mName.setText(mValues.get(position).name);
-//        holder.mCredit.setText(mValues.get(position).credit);
-//        holder.mGroup.setText(mValues.get(position).group);
-//        holder.mNote.setText(mValues.get(position).note);
+        if(mValues.get(position).time != null) {
+            Log.i(LOG_TAG, "TIME IS NOT NULL");
+            holder.mCourseNoFinaltest.setVisibility(View.GONE);
+            holder.mCourseHaveFinaltest.setVisibility(LinearLayout.VISIBLE);
+            holder.mFinaltestTime.setText(mValues.get(position).time + " " + mValues.get(position).day);
+            holder.mFinaltestRoom.setText(mValues.get(position).room + " " + mValues.get(position).building);
+            holder.mFinaltestType.setText(mValues.get(position).type);
+        }
+        else {
+            Log.i(LOG_TAG, "TIME IS NULL");
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,9 +74,13 @@ public class MyCourseRecyclerViewAdapter extends RecyclerView.Adapter<MyCourseRe
         public final View mView;
         public final TextView mCode;
         public final TextView mName;
-//        public final TextView mCredit;
-//        public final TextView mGroup;
-//        public final TextView mNote;
+        public final TextView mCourseNoFinaltest;
+        public final LinearLayout mCourseHaveFinaltest;
+        public final TextView mCourseNoScoreboard;
+        public final TextView mCourseHaveScoreboard;
+        public final TextView mFinaltestTime;
+        public final TextView mFinaltestRoom;
+        public final TextView mFinaltestType;
         public CourseContent.CourseItem mItem;
 
         public ViewHolder(View view) {
@@ -73,9 +88,13 @@ public class MyCourseRecyclerViewAdapter extends RecyclerView.Adapter<MyCourseRe
             mView = view;
             mCode = (TextView) view.findViewById(R.id.course_code);
             mName = (TextView) view.findViewById(R.id.course_name);
-//            mCredit = (TextView) view.findViewById(R.id.course_credit);
-//            mGroup = (TextView) view.findViewById(R.id.course_group);
-//            mNote = (TextView) view.findViewById(R.id.course_note);
+            mCourseNoFinaltest = (TextView) view.findViewById(R.id.course_no_finaltest_label);
+            mCourseHaveFinaltest = (LinearLayout) view.findViewById(R.id.course_have_finaltest);
+            mCourseNoScoreboard = (TextView) view.findViewById(R.id.course_no_scoreboard_label);
+            mCourseHaveScoreboard = (TextView) view.findViewById(R.id.course_have_scoreboard);
+            mFinaltestTime = (TextView) view.findViewById(R.id.course_finaltest_time);
+            mFinaltestRoom = (TextView) view.findViewById(R.id.course_finaltest_room);
+            mFinaltestType = (TextView) view.findViewById(R.id.course_finaltest_type);
         }
 
         @Override
