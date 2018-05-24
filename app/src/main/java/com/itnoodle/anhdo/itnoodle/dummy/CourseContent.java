@@ -15,8 +15,9 @@ public class CourseContent {
         public static final String ROOM = "room";
         public static final String BUILDING = "bulding";
         public static final String TYPE = "type";
-        public static final String URL = "url";
+        public static final String URL = "public_link";
         public static final String UPLOADTIME = "uploadtime";
+        public String id;
         public String code;
         public String name;
         public String credit;
@@ -31,7 +32,8 @@ public class CourseContent {
         public String type;
         public String url;
         public String uploadtime;
-        public CourseItem(String code, String name, String credit, String group, String note) {
+        public CourseItem(String id, String code, String name, String credit, String group, String note) {
+            this.id = id;
             this.code = code;
             this.name = name;
             this.credit = credit;
@@ -50,6 +52,9 @@ public class CourseContent {
         public void updateScoreboard(String url, String uploadtime) {
             this.url = url;
             this.uploadtime = uploadtime;
+        }
+        public String toString() {
+            return "{id:" + this.id + ", code:" + this.code + ", day" + this.day + ", room" + this.room + ", url:"+this.url+"}";
         }
     }
 }

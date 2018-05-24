@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -29,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.itnoodle.anhdo.itnoodle.dummy.CourseContent;
 import com.itnoodle.anhdo.itnoodle.utilities.ApiUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -229,6 +231,7 @@ public class Profile extends Fragment {
                         @Override
                         public void onResponse(String response) {
                             showProgress(false);
+                            Log.i(LOG_TAG, response);
                             try {
                                 JSONObject student = new JSONObject(response);
                                 Student.setCode(student.optString(Student.KEY_CODE));
@@ -237,18 +240,18 @@ public class Profile extends Fragment {
                                 Student.klass = student.optString(Student.KEY_KLASS);
                                 Student.hasInfo = true;
                                 setStudentInfo();
+                                JSONArray courseCodes = student.optJSONArray(Student.KEY_COURSE_CODES);
+                                Log.i(LOG_TAG, courseCodes.toString());
                                 JSONObject slots = student.optJSONObject(Student.KEY_SLOTS);
-                                JSONObject finaltests = student.optJSONObject(Student.KEY_FINALTESTS);
                                 Log.i(LOG_TAG, slots.toString());
                                 Student.ITEMS.clear();
                                 Student.ITEM_MAP.clear();
-                                JSONObject course, finaltest;
-                                String courseCode;
-                                for(Iterator<String> iKey=slots.keys();iKey.hasNext();) {
-                                    courseCode = iKey.next().toString();
-                                    course = slots.optJSONObject(courseCode);
+                                JSONObject course;
+                                for(int i = 0; i < courseCodes.length(); i++) {
+                                    course = slots.optJSONObject(courseCodes.getString(i));
                                     Student.addCourse(
                                             new CourseContent.CourseItem(
+                                                    courseCodes.getString(i),
                                                     course.optString(CourseContent.CourseItem.CODE),
                                                     course.optString(CourseContent.CourseItem.NAME),
                                                     course.optString(CourseContent.CourseItem.CREDIT),
@@ -256,30 +259,32 @@ public class Profile extends Fragment {
                                                     course.optString(CourseContent.CourseItem.NOTE)
                                             )
                                     );
-                                    if(finaltests != null) {
-                                        finaltest = finaltests.optJSONObject(courseCode);
-                                        if(finaltest != null) {
-//                                            Log.i(LOG_TAG, courseCode);
-//                                            Log.i(LOG_TAG, finaltest.toString());
-                                            Student.updateFinaltest(
-                                                    courseCode,
-                                                    finaltest.optString(CourseContent.CourseItem.SEAT_NO),
-                                                    finaltest.optString(CourseContent.CourseItem.DAY),
-                                                    finaltest.optString(CourseContent.CourseItem.TIME),
-                                                    finaltest.optString(CourseContent.CourseItem.SHIFT),
-                                                    finaltest.optString(CourseContent.CourseItem.ROOM),
-                                                    finaltest.optString(CourseContent.CourseItem.BUILDING),
-                                                    finaltest.optString(CourseContent.CourseItem.TYPE)
-                                                    );
-                                        }
+                                    if(!TextUtils.isEmpty(course.optString(CourseContent.CourseItem.DAY))) {
+                                        Student.updateFinaltest(
+                                                courseCodes.getString(i),
+                                                "",
+                                                course.optString(CourseContent.CourseItem.DAY),
+                                                "",
+                                                "",
+                                                course.optString(CourseContent.CourseItem.ROOM),
+                                                "",
+                                                course.optString(CourseContent.CourseItem.TYPE)
+                                        );
                                     }
+                                    if(!TextUtils.isEmpty(course.optString(CourseContent.CourseItem.URL))) {
+                                        Student.updateScoreboard(
+                                                courseCodes.getString(i),
+                                                course.optString(CourseContent.CourseItem.URL),
+                                                ""
+                                        );
+                                    }
+                                    Log.i(LOG_TAG, Student.ITEM_MAP.get(courseCodes.getString(i)).toString());
                                 }
                             } catch(final JSONException e) {
                                 Log.e(LOG_TAG, "Parse JSON failed");
                                 Log.e(LOG_TAG, e.getMessage());
                             }
 
-                            Log.i(LOG_TAG, response);
                         }
                     }, new Response.ErrorListener(){
                 @Override
@@ -350,7 +355,7 @@ public class Profile extends Fragment {
         public static final String KEY_KLASS = "klass";
         public static final String KEY_BIRTHDAY = "birthday";
         public static final String KEY_SLOTS = "slots";
-        public static final String KEY_FINALTESTS = "finaltests";
+        public static final String KEY_COURSE_CODES = "course_codes";
         public static String code;
         public static String fullname;
         public static String klass;
@@ -359,7 +364,7 @@ public class Profile extends Fragment {
         public static boolean hasInfo = false;
         static public void addCourse(CourseContent.CourseItem courseItem) {
             ITEMS.add(courseItem);
-            ITEM_MAP.put(courseItem.code, courseItem);
+            ITEM_MAP.put(courseItem.id, courseItem);
         }
         static public void updateFinaltest(String courseCode, String seatNo, String day, String time, String shift, String room, String building, String type) {
             CourseContent.CourseItem course = ITEM_MAP.get(courseCode);
