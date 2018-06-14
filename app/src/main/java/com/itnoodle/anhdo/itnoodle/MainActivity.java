@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
         if(!item.uploadTime.equals(ScoreboardContent.ScoreboardItem.SCOREBOARD_NOT_UPLOADED)) {
             Log.i(LOG_TAG, item.uploadTime);
             Log.i(LOG_TAG, item.url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+item.url));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.url));
             if(intent.resolveActivity(getPackageManager()) != null)
                 startActivity(intent);
         }
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity
     public void onListFragmentInteraction(CourseContent.CourseItem item) {
         if(!TextUtils.isEmpty(item.url) && item.url != null) {
             Log.i(LOG_TAG, item.url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+item.url));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.url));
             if(intent.resolveActivity(getPackageManager()) != null)
                 startActivity(intent);
         }
