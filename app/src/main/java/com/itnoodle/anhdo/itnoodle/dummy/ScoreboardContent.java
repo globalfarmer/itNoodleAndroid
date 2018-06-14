@@ -48,7 +48,7 @@ public class ScoreboardContent {
 
     static public void loadNextPage(final MyScoreboardRecyclerViewAdapter mAdapter, Context context) {
         queue = Volley.newRequestQueue(context);
-        queue.add(new StringRequest(Request.Method.GET, ApiUtils.getScoreboardUrl(nextPage(), "1", "2017"),
+        queue.add(new StringRequest(Request.Method.GET, ApiUtils.getScoreboardUrl(nextPage(), "2", "2017"),
                 new Response.Listener<String>(){
                     @Override
                     public void onResponse(String response) {
@@ -60,7 +60,7 @@ public class ScoreboardContent {
                             JSONObject scoreboard;
                             for(int i = 0; i < scoreboards.length(); i++) {
                                 scoreboard = scoreboards.getJSONObject(i);
-                                Log.i(LOG_TAG, scoreboard.getString(ScoreboardItem.URL));
+                                Log.i(LOG_TAG, scoreboard.optString(ScoreboardItem.URL));
                                 addItem(new ScoreboardItem(
                                         Integer.toString(i+1),
                                         scoreboard.optString(ScoreboardItem.COURSE_CODE),
@@ -108,10 +108,11 @@ public class ScoreboardContent {
             this.id = id;
             this.code= courseCode;
             this.name = courseName;
-            this.url = url;
 
-            if(!TextUtils.isEmpty(uploadTime.trim()))
+            if(!TextUtils.isEmpty(uploadTime.trim())&&uploadTime!=null) {
                 this.uploadTime = uploadTime;
+                this.url = url;
+            }
             else
                 this.uploadTime = SCOREBOARD_NOT_UPLOADED;
             this.isStar = isStar;
