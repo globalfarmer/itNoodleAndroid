@@ -11,7 +11,7 @@ import java.net.URL;
  * These com.itnoodle.anhdo.itnoodle.utilities will be used to get data from itNoodleService
  */
 public class ApiUtils {
-    final static String SERVICE_BASE_URL = "http://159.65.138.216";
+    final static String SERVICE_BASE_URL = "http://209.97.166.255";
     final static String STUDENT_BASE = "student";
     final static String ANNOUNCE_BASE = "announce";
     final static String SCOREBOARD_BASE = "scoreboard";
