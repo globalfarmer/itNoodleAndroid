@@ -3,8 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         release {
-            keyAlias 'release_key'
-            storeFile file('D:/iNoodleData/itnoodle.jks')
+            keyAlias 'itNoodleKey'
+            storeFile file('C:/Users/AnhDo/AndroidStudioProjects/itNoodle.jks')
+            keyPassword 'itNoodle2018'
+            storePassword 'vangioi2010'
         }
     }
     compileSdkVersion 27
@@ -38,6 +40,7 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.volley:volley:1.0.0'
+    implementation "android.arch.lifecycle:extensions:1.1.0"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

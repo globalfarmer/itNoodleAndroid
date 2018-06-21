@@ -70,7 +70,7 @@ public class CourseFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyCourseRecyclerViewAdapter(Profile.Student.ITEMS, mListener));
+            recyclerView.setAdapter(new MyCourseRecyclerViewAdapter(MainActivity.studentViewModel.getInfo().items, mListener));
         }
         return view;
     }
