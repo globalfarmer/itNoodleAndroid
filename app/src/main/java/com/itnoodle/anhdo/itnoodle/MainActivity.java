@@ -1,6 +1,8 @@
 package com.itnoodle.anhdo.itnoodle;
 
 import android.app.FragmentManager;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 import com.itnoodle.anhdo.itnoodle.dummy.AnnounceContent;
 import com.itnoodle.anhdo.itnoodle.dummy.CourseContent;
 import com.itnoodle.anhdo.itnoodle.dummy.ScoreboardContent;
+import com.itnoodle.anhdo.itnoodle.models.StudentInfo;
+import com.itnoodle.anhdo.itnoodle.viewmodels.StudentViewModel;
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     private CourseFragment myCourse = new CourseFragment();
     private TextView navHeaderTitle;
     private TextView navHeaderSubtitle;
+    public static StudentViewModel studentViewModel;
 
     private static final String LOG_TAG = "MAIN_ACTIVITY";
 
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
         navigationView.getMenu().getItem(0).setChecked(true);
+        studentViewModel = ViewModelProviders.of(this).get(StudentViewModel.class);
     }
 
     @Override
@@ -187,23 +193,4 @@ public class MainActivity extends AppCompatActivity
         }
         Log.i(LOG_TAG, item.code);
     }
-    private boolean getNavHeader() {
-        if(navHeaderTitle==null) {
-            navHeaderTitle = this.getDelegate().findViewById(R.id.nav_header_title);
-            navHeaderSubtitle = this.getDelegate().findViewById(R.id.nav_header_subtitle);
-        }
-        return navHeaderTitle != null ? true : false;
-    }
-    public void updateStudentInfo() {
-        if(getNavHeader()) {
-            if (Profile.Student.code == null) {
-                navHeaderTitle.setText(getString(R.string.nav_header_title));
-                navHeaderSubtitle.setText(getString(R.string.nav_header_subtitle));
-            } else {
-                navHeaderTitle.setText(Profile.Student.fullname);
-                navHeaderSubtitle.setText(Profile.Student.getEmail());
-            }
-        }
-    }
-
  }

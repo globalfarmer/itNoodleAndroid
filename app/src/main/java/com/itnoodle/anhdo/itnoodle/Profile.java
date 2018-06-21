@@ -3,6 +3,7 @@ package com.itnoodle.anhdo.itnoodle;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -10,35 +11,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.itnoodle.anhdo.itnoodle.dummy.CourseContent;
-import com.itnoodle.anhdo.itnoodle.utilities.ApiUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import com.itnoodle.anhdo.itnoodle.viewmodels.StudentViewModel;
 
 
 /**
@@ -50,19 +33,16 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class Profile extends Fragment {
-    public final static String LOG_TAG = "PROFILE_FRAG";
+    public final static String LOG_TAG = Profile.class.getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private EditText mStdCodeView;
     private EditText mTermView;
     private EditText mYearView;
-    private RequestQueue queue;
     private TextView tvName;
     private TextView tvBirthday;
     private TextView tvKlass;
@@ -111,22 +91,28 @@ public class Profile extends Fragment {
         tvName = (TextView) getView().findViewById(R.id.tv_fullname);
         mLoginFormView = (View)getView().findViewById(R.id.login_form);
         mProgressView = (View)getView().findViewById(R.id.login_progress);
+
+        tvName.setText(MainActivity.studentViewModel.studentInfo().fullname);
+        tvKlass.setText(MainActivity.studentViewModel.studentInfo().klass);
+        tvBirthday.setText(MainActivity.studentViewModel.studentInfo().birthday);
+        mStdCodeView.setText(MainActivity.studentViewModel.studentInfo().code);
+        mTermView.setText(MainActivity.studentViewModel.studentInfo().term);
+        mYearView.setText(MainActivity.studentViewModel.studentInfo().year);
+//        ((MainActivity)getActivity()).updateStudentInfo();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(Student.hasInfo)
-            setStudentInfo();
     }
 
     @Override
@@ -224,83 +210,10 @@ public class Profile extends Fragment {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            queue = Volley.newRequestQueue(getContext());
-            queue.add(new StringRequest(Request.Method.GET, ApiUtils.getStudentUrl(studentCode, term, year.substring(0,4)),
-                    new Response.Listener<String>(){
-                        @Override
-                        public void onResponse(String response) {
-                            showProgress(false);
-                            Log.i(LOG_TAG, response);
-                            try {
-                                JSONObject student = new JSONObject(response);
-                                Student.setCode(student.optString(Student.KEY_CODE));
-                                Student.fullname = student.optString(Student.KEY_FULLNAME);
-                                Student.birthday = student.optString(Student.KEY_BIRTHDAY);
-                                Student.klass = student.optString(Student.KEY_KLASS);
-                                Student.hasInfo = true;
-                                setStudentInfo();
-                                JSONArray courseCodes = student.optJSONArray(Student.KEY_COURSE_CODES);
-                                Log.i(LOG_TAG, courseCodes.toString());
-                                JSONObject slots = student.optJSONObject(Student.KEY_SLOTS);
-                                Log.i(LOG_TAG, slots.toString());
-                                Student.ITEMS.clear();
-                                Student.ITEM_MAP.clear();
-                                JSONObject course;
-                                for(int i = 0; i < courseCodes.length(); i++) {
-                                    course = slots.optJSONObject(courseCodes.getString(i));
-                                    Student.addCourse(
-                                            new CourseContent.CourseItem(
-                                                    courseCodes.getString(i),
-                                                    course.optString(CourseContent.CourseItem.CODE),
-                                                    course.optString(CourseContent.CourseItem.NAME),
-                                                    course.optString(CourseContent.CourseItem.CREDIT),
-                                                    course.optString(CourseContent.CourseItem.GROUP),
-                                                    course.optString(CourseContent.CourseItem.NOTE)
-                                            )
-                                    );
-                                    if(!TextUtils.isEmpty(course.optString(CourseContent.CourseItem.DAY))) {
-                                        Student.updateFinaltest(
-                                                courseCodes.getString(i),
-                                                "",
-                                                course.optString(CourseContent.CourseItem.DAY),
-                                                "",
-                                                "",
-                                                course.optString(CourseContent.CourseItem.ROOM),
-                                                "",
-                                                course.optString(CourseContent.CourseItem.TYPE)
-                                        );
-                                    }
-                                    if(!TextUtils.isEmpty(course.optString(CourseContent.CourseItem.URL))) {
-                                        Student.updateScoreboard(
-                                                courseCodes.getString(i),
-                                                course.optString(CourseContent.CourseItem.URL),
-                                                ""
-                                        );
-                                    }
-                                    Log.i(LOG_TAG, Student.ITEM_MAP.get(courseCodes.getString(i)).toString());
-                                }
-                            } catch(final JSONException e) {
-                                Log.e(LOG_TAG, "Parse JSON failed");
-                                Log.e(LOG_TAG, e.getMessage());
-                            }
-
-                        }
-                    }, new Response.ErrorListener(){
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    showProgress(false);
-                    Log.e(LOG_TAG, "request get student failed");
-                }
-            }));
+            MainActivity.studentViewModel.init(studentCode, term, year);
         }
     }
-    private void setStudentInfo() {
-        tvName.setText(Student.fullname);
-        tvKlass.setText(Student.klass);
-        tvBirthday.setText(Student.birthday);
-        ((MainActivity)getActivity()).updateStudentInfo();
-    }
+
     private boolean isTermValid(String term) {
         return term.equals("1") || term.equals("2");
     }
@@ -345,43 +258,6 @@ public class Profile extends Fragment {
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-    static class Student {
-        public static final List<CourseContent.CourseItem> ITEMS = new ArrayList<CourseContent.CourseItem>();
-        public static final Map<String, CourseContent.CourseItem> ITEM_MAP = new HashMap<String, CourseContent.CourseItem>();
-        public static final String KEY_CODE = "code";
-        public static final String KEY_FULLNAME = "fullname";
-        public static final String KEY_KLASS = "klass";
-        public static final String KEY_BIRTHDAY = "birthday";
-        public static final String KEY_SLOTS = "slots";
-        public static final String KEY_COURSE_CODES = "course_codes";
-        public static String code;
-        public static String fullname;
-        public static String klass;
-        public static String birthday;
-        public static String email;
-        public static boolean hasInfo = false;
-        static public void addCourse(CourseContent.CourseItem courseItem) {
-            ITEMS.add(courseItem);
-            ITEM_MAP.put(courseItem.id, courseItem);
-        }
-        static public void updateFinaltest(String courseCode, String seatNo, String day, String time, String shift, String room, String building, String type) {
-            CourseContent.CourseItem course = ITEM_MAP.get(courseCode);
-            if(course != null)
-                course.updateFinaltest(seatNo, day, time, shift, room, building, type);
-        }
-        static void updateScoreboard(String courseCode, String url, String uploadtime) {
-            CourseContent.CourseItem course = ITEM_MAP.get(courseCode);
-            if(course != null)
-                course.updateScoreboard(url, uploadtime);
-        }
-        public static void setCode(String code) {
-            Student.code = code;
-            Student.email = code + "@vnu.edu.vn";
-        }
-        public static String getEmail() {
-            return email;
         }
     }
 }
